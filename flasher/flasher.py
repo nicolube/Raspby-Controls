@@ -56,7 +56,7 @@ class PioFileChooserScreen(Screen):
                 c[1].color = (1, .5, 0, 1)
                 parent.locked = True
     
-    def on_touch_down(self, s, t):
+    def on_touch(self, s, t):
         if not s or not path.isdir(s[0]):
             return
         for fn in os.listdir(s[0]):

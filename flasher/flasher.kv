@@ -1,6 +1,8 @@
 #:kivy 2.0.0
 #:import hex kivy.utils.get_color_from_hex
 #:import Factory kivy.factory.Factory
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
 
 <FlasherMainScreen>:
     name: "FlasherMainScreen"
@@ -23,6 +25,10 @@
                 size_hint: (.2, .8)
                 pos_hint: {"center_y": 0.5, "x": 0.008}
                 text: "Back"
+                on_press:
+                    root.manager.transition = SlideTransition()
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = "MainScreen"
         FloatLayout:
             size_hint: (1, .88)
             pos_hint: {"x": 0, "y": 0}
@@ -45,15 +51,12 @@
                 pos_hint: {"x": 0, "y": .9}
                 Label:
                     text: "Project: "
-                    size_hint: (.2, 1)
+                    size_hint: (.3, 1)
                 Label:
                     id: file
                     text: "<select>"
                     size_hint: (.6, 1)
-                Button:
-                    size_hint: (.2, 1)
-                    text: "Choose project"
-                    on_press: 
+                    on_touch_down:
                         root.manager.transition = FadeTransition()
                         root.manager.current = "PioFileChooserScreen"
 <PioFileChooserScreen>:
@@ -78,7 +81,7 @@
                 size_hint: (1, 1)
                 rootpath: '..'
                 on_entry_added: root.entityProcessor(args[0], args[1])
-                on_touch_down: root.on_touch_down(self.selection, args[1])
+                on_touch_down: root.on_touch(self.selection, args[1])
 
 
 

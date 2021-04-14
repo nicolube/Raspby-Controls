@@ -1,5 +1,4 @@
 #:kivy 2.0.0
-#:import FadeTransition kivy.uix.screenmanager.FadeTransition
 
 ScreenManager:
     id: screen_manager
@@ -17,4 +16,5 @@ ScreenManager:
         Button:
             text: "Firmware Flasher"
             on_press:
+                root.manager.transition.direction = 'right'
                 root.manager.current = "FlasherMainScreen"
