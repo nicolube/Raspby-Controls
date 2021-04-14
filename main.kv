@@ -1,0 +1,20 @@
+#:kivy 2.0.0
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
+
+ScreenManager:
+    id: screen_manager
+    MainScreen:
+        manager: screen_manager
+    FlasherMainScreen:
+        manager: screen_manager
+    PioFileChooserScreen:
+        manager: screen_manager
+
+<MainScreen>:
+    name: "MainScreen"
+    FloatLayout:
+        size_hint: (1, 1)
+        Button:
+            text: "Firmware Flasher"
+            on_press:
+                root.manager.current = "FlasherMainScreen"

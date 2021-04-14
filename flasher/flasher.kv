@@ -1,0 +1,84 @@
+#:kivy 2.0.0
+#:import hex kivy.utils.get_color_from_hex
+#:import Factory kivy.factory.Factory
+
+<FlasherMainScreen>:
+    name: "FlasherMainScreen"
+    id: fms
+    port_select: port_select
+    FloatLayout:
+        size_hint: (.96, .96)
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        FloatLayout:
+            size_hint: (1, .1)
+            pos_hint: {"x": 0, "y": 0.9}
+            id: top
+            canvas.before:
+                Color:
+                    rgba: hex('#303136')
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Button:
+                size_hint: (.2, .8)
+                pos_hint: {"center_y": 0.5, "x": 0.008}
+                text: "Back"
+        FloatLayout:
+            size_hint: (1, .88)
+            pos_hint: {"x": 0, "y": 0}
+            GridLayout:
+                cols: 2
+                size_hint: (.3,.10)
+                pos_hint: {"x": .7, "y": .9}
+                Label:
+                    text: "Port: "
+                    size_hint: (.33, 1)
+                SerialSpinner:
+                    id: port_select
+                    text: "<select>"
+                    on_text:
+                        fms.set_upload_port(self.text)
+                    on_press: self.refresh()
+            GridLayout:
+                cols: 3
+                size_hint: (.3,.10)
+                pos_hint: {"x": 0, "y": .9}
+                Label:
+                    text: "Project: "
+                    size_hint: (.2, 1)
+                Label:
+                    id: file
+                    text: "<select>"
+                    size_hint: (.6, 1)
+                Button:
+                    size_hint: (.2, 1)
+                    text: "Choose project"
+                    on_press: 
+                        root.manager.transition = FadeTransition()
+                        root.manager.current = "PioFileChooserScreen"
+<PioFileChooserScreen>:
+    name: "PioFileChooserScreen"
+    file_chooser: file_chooser
+    FloatLayout:
+        size_hint: (1, 1)
+        GridLayout:
+            pos_hint: {"x": 0, "y": .9}
+            size_hint: (1,.1)
+            cols: 3
+            Button:
+                text: "Cancel"
+                on_press:
+                    app.root.current = "FlasherMainScreen"
+        BoxLayout:
+            size_hint: (1,.8)
+            pos_hint: {"x": 0, "y": 0}
+            FileChooserListView:
+                id: file_chooser
+                dirselect: True
+                size_hint: (1, 1)
+                rootpath: '..'
+                on_entry_added: root.entityProcessor(args[0], args[1])
+                on_touch_down: root.on_touch_down(self.selection, args[1])
+
+
+
