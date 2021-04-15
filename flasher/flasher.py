@@ -49,11 +49,12 @@ class FlasherMainScreen(Screen):
 
 class SerialSpinner(Spinner):
     def refresh(self):
-        self.values = serial_ports()
+        self.values = util.serial_ports()
 
 class DriveSipinner(Spinner):
     def refresh(self):
-        self.values = serial_ports()
+        self.values = util.drives()
+        self.values.append("Home")
 
 
 class PioFileChooserScreen(Screen):
@@ -70,7 +71,7 @@ class PioFileChooserScreen(Screen):
                 c[1].color = (1, .5, 0, 1)
                 parent.locked = True
     def update_drives():
-        
+        pass
     def on_touch(self, s, t):
         if not s or not path.isdir(s[0]):
             return

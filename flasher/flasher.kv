@@ -79,11 +79,14 @@
                 text :"Drive:"
             DriveSipinner:
                 id: drive_select
-                text: "<select>"
+                text: "Home"
+                on_press:
+                    update_drives()
+                on_selected:
+                    
             Button:
                 text: "Select"
                 on_press:
-                    update_drives()
         BoxLayout:
             size_hint: (1,.8)
             pos_hint: {"x": 0, "y": 0}
