@@ -9,7 +9,7 @@ from os import path
 
 import flasher.flasher
 
-Window.show_cursor = False
+#Window.show_cursor = False
 
 Window.size = (800, 480)
 

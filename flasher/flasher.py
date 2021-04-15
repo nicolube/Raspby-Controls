@@ -13,10 +13,16 @@ from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.graphics import Rectangle, Canvas
 from os import path
+from pathlib import Path
 import os
 
 from kivy.utils import rgba
-from util import serial_ports
+import util
+
+config = util.config["flasher"]
+0
+if config["firmwarePath"] == None:
+    config["firmwarePath"] = str(Path().home())
 
 __dir = path.dirname(path.realpath(__file__))
 
@@ -45,9 +51,17 @@ class SerialSpinner(Spinner):
     def refresh(self):
         self.values = serial_ports()
 
+class DriveSipinner(Spinner):
+    def refresh(self):
+        self.values = serial_ports()
+
 
 class PioFileChooserScreen(Screen):
     file_chooser = ObjectProperty(None)
+    drive_select = ObjectProperty(None)
+    def on_pre_enter(self):
+        self.file_chooser.rootpath = config["firmwarePath"]
+        self.drive_select.values = util.find_usb_mass_storage()
     global data
     def entityProcessor(self, entry, parent):
         c = parent.children[0].children
@@ -55,7 +69,8 @@ class PioFileChooserScreen(Screen):
             if path.exists(path.join(self.file_chooser.path, c[1].text, "platformio.ini")):
                 c[1].color = (1, .5, 0, 1)
                 parent.locked = True
-    
+    def update_drives():
+        
     def on_touch(self, s, t):
         if not s or not path.isdir(s[0]):
             return
@@ -63,5 +78,5 @@ class PioFileChooserScreen(Screen):
             if path.basename(fn) =="platformio.ini" and t.is_double_tap:
                 t.is_double_tap = False
                 self.file_chooser.cancel()
-                self.file_chooser.path = path.join(self.file_chooser.path, os.pardir)
+                #self.file_chooser.path = path.join(self.file_chooser.path, os.pardir)
                 break

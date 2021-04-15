@@ -56,4 +56,6 @@ popd
 
 sudo adduser "$USER" render
 
+python -m pip install --upgrade pip setuptools virtualenv
+
 sudo python3 -m pip install -r requirements.txt

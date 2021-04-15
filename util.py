@@ -1,7 +1,30 @@
 import os
 import serial
+import json
 import sys
 import glob
+
+import usb.core
+import usb.util
+from usb.legacy import CLASS_MASS_STORAGE
+
+from os import path
+import os
+
+__dir = path.dirname(path.realpath(__file__))
+
+config = {}
+for file in os.listdir(path.join(__dir, "configs")):
+    raw = open(path.join(__dir, "configs", file), "r").read()
+    config[file.split('.')[0]] = json.loads(raw)
+
+def drives():
+    if sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+        files = os.listdir("/media")
+        for file in files:
+            print(file)
+        return files
+    return []
 
 def serial_ports():
     if sys.platform.startswith('win'):

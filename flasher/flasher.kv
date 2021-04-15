@@ -6,12 +6,12 @@
 
 <FlasherMainScreen>:
     name: "FlasherMainScreen"
-    id: fms
     port_select: port_select
     FloatLayout:
         size_hint: (.96, .96)
         pos_hint: {"center_x": 0.5, "center_y": 0.5}
         FloatLayout:
+            spacing: [10, 10]
             size_hint: (1, .1)
             pos_hint: {"x": 0, "y": 0.9}
             id: top
@@ -27,7 +27,7 @@
                 text: "Back"
                 on_press:
                     root.manager.transition = SlideTransition()
-                    root.manager.transition.direction = 'left'
+                    root.manager.transition.direction = 'right'
                     root.manager.current = "MainScreen"
         FloatLayout:
             size_hint: (1, .88)
@@ -43,7 +43,7 @@
                     id: port_select
                     text: "<select>"
                     on_text:
-                        fms.set_upload_port(self.text)
+                        root.set_upload_port(self.text)
                     on_press: self.refresh()
             GridLayout:
                 cols: 3
@@ -52,26 +52,38 @@
                 Label:
                     text: "Project: "
                     size_hint: (.3, 1)
-                Label:
+                Button:
                     id: file
                     text: "<select>"
                     size_hint: (.6, 1)
-                    on_touch_down:
+                    on_press:
                         root.manager.transition = FadeTransition()
                         root.manager.current = "PioFileChooserScreen"
 <PioFileChooserScreen>:
     name: "PioFileChooserScreen"
     file_chooser: file_chooser
+    drive_select: drive_select
     FloatLayout:
         size_hint: (1, 1)
         GridLayout:
             pos_hint: {"x": 0, "y": .9}
             size_hint: (1,.1)
-            cols: 3
+            spacing: [10, 10]
+            padding: [10,10,10,10]
+            cols: 4
             Button:
                 text: "Cancel"
                 on_press:
                     app.root.current = "FlasherMainScreen"
+            Label:
+                text :"Drive:"
+            DriveSipinner:
+                id: drive_select
+                text: "<select>"
+            Button:
+                text: "Select"
+                on_press:
+                    update_drives()
         BoxLayout:
             size_hint: (1,.8)
             pos_hint: {"x": 0, "y": 0}
@@ -79,7 +91,6 @@
                 id: file_chooser
                 dirselect: True
                 size_hint: (1, 1)
-                rootpath: '..'
                 on_entry_added: root.entityProcessor(args[0], args[1])
                 on_touch_down: root.on_touch(self.selection, args[1])
 
