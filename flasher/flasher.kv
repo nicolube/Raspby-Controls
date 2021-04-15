@@ -46,7 +46,7 @@
                         root.set_upload_port(self.text)
                     on_press: self.refresh()
             GridLayout:
-                cols: 3
+                cols: 2
                 size_hint: (.3,.10)
                 pos_hint: {"x": 0, "y": .9}
                 Label:
@@ -74,19 +74,21 @@
             Button:
                 text: "Cancel"
                 on_press:
-                    app.root.current = "FlasherMainScreen"
+                    root.manager.current = "FlasherMainScreen"
             Label:
                 text :"Drive:"
             DriveSipinner:
                 id: drive_select
                 text: "Home"
                 on_press:
-                    update_drives()
-                on_selected:
+                    root.update_drives()
+                on_text:
+                    root.select_root_path(self.text)
                     
             Button:
                 text: "Select"
                 on_press:
+                    root.manager.current = "FlasherMainScreen"
         BoxLayout:
             size_hint: (1,.8)
             pos_hint: {"x": 0, "y": 0}

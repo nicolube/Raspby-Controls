@@ -20,7 +20,7 @@ from kivy.utils import rgba
 import util
 
 config = util.config["flasher"]
-0
+
 if config["firmwarePath"] == None:
     config["firmwarePath"] = str(Path().home())
 
@@ -62,7 +62,6 @@ class PioFileChooserScreen(Screen):
     drive_select = ObjectProperty(None)
     def on_pre_enter(self):
         self.file_chooser.rootpath = config["firmwarePath"]
-        self.drive_select.values = util.find_usb_mass_storage()
     global data
     def entityProcessor(self, entry, parent):
         c = parent.children[0].children
@@ -70,8 +69,16 @@ class PioFileChooserScreen(Screen):
             if path.exists(path.join(self.file_chooser.path, c[1].text, "platformio.ini")):
                 c[1].color = (1, .5, 0, 1)
                 parent.locked = True
-    def update_drives():
-        pass
+    def update_drives(self):
+        drives = ["Home"]
+        for d in util.drives():
+            drives.append(d)
+        self.drive_select.values = drives
+    def select_root_path(self, pKey):
+        if (pKey == "Home"):
+            self.file_chooser.rootpath = config["firmwarePath"]
+            return
+        self.file_chooser.rootpath = path.join(util.drive_basepath, pKey)
     def on_touch(self, s, t):
         if not s or not path.isdir(s[0]):
             return
