@@ -4,12 +4,10 @@ import json
 import sys
 import glob
 
-import usb.core
-import usb.util
-from usb.legacy import CLASS_MASS_STORAGE
-
 from os import path
 import os
+
+drive_basepath = ""
 
 __dir = path.dirname(path.realpath(__file__))
 
@@ -19,8 +17,10 @@ for file in os.listdir(path.join(__dir, "configs")):
     config[file.split('.')[0]] = json.loads(raw)
 
 def drives():
+    global drive_basepath
     if sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
-        files = os.listdir("/media")
+        drive_basepath = "/media"
+        files = os.listdir(drive_basepath)
         for file in files:
             print(file)
         return files
