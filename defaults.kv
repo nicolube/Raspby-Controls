@@ -1,13 +1,6 @@
 #:kivy 2.0.0
 #:import hex kivy.utils.get_color_from_hex
-<Screen>:
-    size: root.size
-    canvas.before:
-        Color:
-            rgba: hex('#27282b')
-        Rectangle:
-            pos: self.pos
-            size: self.size
+
 
 <Widget>:
     canvas.before:
@@ -16,6 +9,20 @@
         Rectangle:
             pos: self.pos
             size: self.size
+<Screen>:
+    size: root.size
+
+<MenuLayout@FloatLayout>:
+    size_hint: (1, .1)
+    pos_hint: {"x": 0, "y": 0.9}
+    spacing: [10, 10]
+    canvas.before:
+        Color:
+            rgba: hex('#303136')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
 
 <Button>:
     background_color: hex('#494b50') if self.state == 'normal' else hex("#797d86")

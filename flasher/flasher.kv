@@ -10,17 +10,8 @@
     FloatLayout:
         size_hint: (.96, .96)
         pos_hint: {"center_x": 0.5, "center_y": 0.5}
-        FloatLayout:
-            spacing: [10, 10]
-            size_hint: (1, .1)
-            pos_hint: {"x": 0, "y": 0.9}
+        MenuLayout:
             id: top
-            canvas.before:
-                Color:
-                    rgba: hex('#303136')
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
             Button:
                 size_hint: (.2, .8)
                 pos_hint: {"center_y": 0.5, "x": 0.008}
