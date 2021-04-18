@@ -11,11 +11,14 @@ from kivy.uix.label import Label
 from kivy.uix.filechooser import FileChooser
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
-from os import path
+from os import path, sync
 from pathlib import Path
 import os
 import util
 from platformio.project.config import ProjectConfig
+from platformio.platform.factory import PlatformFactory
+from platformio.project.helpers import load_project_ide_data
+from multiprocessing import cpu_count
 
 config = util.config["flasher"]
 
@@ -34,33 +37,55 @@ class FlasherMainScreen(Screen):
     port_select = ObjectProperty(None)
     popup = ObjectProperty(None)
     select_button = ObjectProperty(None)
-    environment_spinner:  ObjectProperty(None)
+    environment_spinner = ObjectProperty(None)
+    tasks_spinner = ObjectProperty(None)
+    force_switch = ObjectProperty(None)
     upload_port = None
     project_config = None
+    targets = {}
 
     def on_enter(self):
         super().on_enter(self)
 
-    def select(self, port):
-        pass
-
     def set_upload_port(self, port):
         self.upload_port = port
     def update_project_path(self, _, sel):
+        os.chdir(sel)
         self.select_button.text = path.basename(sel)
         self.project_config = ProjectConfig(path.join(sel, "platformio.ini"))
         envs = self.project_config.envs()
-        self.environment_spinner.values = envs
         dEnvs = self.project_config.default_envs()
+        self.environment_spinner.values = envs
         self.environment_spinner.disabled = False
         if len(dEnvs) > 0:
-            self.environment_spinner.text = dEnvs[0]
+            environment = dEnvs[0]
         elif len(envs) > 0:
-            self.environment_spinner.text = envs[0]
+            environment = envs[0]
         else:
-            self.environment_spinner.text = "No Envs!"
+            environment = "No Envs!"
             self.environment_spinner.disabled = True
+        self.environment_spinner.text = environment
+        if not self.environment_spinner.disabled:
+            self.update_targets()
 
+    def update_targets(self):
+        self.tasks_spinner.disabled = False
+        try:
+            targets = {}
+            for env, data in load_project_ide_data(os.getcwd(), [self.environment_spinner.text]).items():
+                for t in data.get("targets"):
+                    self.targets[t["title"]] = t["name"]
+            self.tasks_spinner.values = self.targets.keys()
+            sorted(self.targets)
+            if "Upload" in self.targets.keys():
+                self.tasks_spinner.text = "Upload"
+            else:
+                self.tasks_spinner.text = self.targets.keys()[0]
+            self.targets = targets
+        except:
+            self.tasks_spinner.disabled = True
+            self.tasks_spinner.text = "Failed to load"
+                
 
 class SerialSpinner(Spinner):
     def refresh(self):

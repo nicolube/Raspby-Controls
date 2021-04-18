@@ -9,6 +9,8 @@
     port_select: port_select
     select_button: select_button
     environment_spinner: environment_spinner
+    tasks_spinner: tasks_spinner
+    force_switch: force_switch
     FloatLayout:
         size_hint: (.96, .96)
         pos_hint: {"center_x": 0.5, "center_y": 0.5}
@@ -60,7 +62,26 @@
                     id: environment_spinner
                     disabled: True
                     text: "<select>"
+                    on_text:
+                        root.update_targets()
                     size_hint: (.6, None)
+                Label:
+                    text: "Task: "
+                    size_hint: (.3, None)
+                Spinner:
+                    id: tasks_spinner
+                    disabled: environment_spinner.disabled
+                    text: "<select>"
+                    values: root.targets.keys()
+                    size_hint: (.6, None)
+                Label:
+                    text: "Force Task: "
+                    size_hint: (.3, None)
+                Switch:
+                    id: force_switch
+                    active: False
+                    size_hint: (.6, None)
+
 <PioFileChooserScreen>:
     name: "PioFileChooserScreen"
     file_chooser: file_chooser
@@ -86,7 +107,6 @@
                     root.update_drives()
                 on_text:
                     root.select_root_path(self.text)
-                    
             Button:
                 text: "Select"
                 disabled: not root.is_pio_project_selection(file_chooser.selection)
@@ -99,6 +119,7 @@
             FileChooserListView:
                 id: file_chooser
                 dirselect: True
+                mutiselect: False
                 size_hint: (1, 1)
                 on_entry_added: root.entityProcessor(args[0], args[1])
                 on_touch_down: root.on_touch(self.selection, args[1])
