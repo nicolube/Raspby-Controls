@@ -2,9 +2,11 @@
 
 ScreenManager:
     id: screen_manager
+    flasher_main_screen: flasher_main_screen
     MainScreen:
         manager: screen_manager
     FlasherMainScreen:
+        id: flasher_main_screen
         manager: screen_manager
     PioFileChooserScreen:
         manager: screen_manager

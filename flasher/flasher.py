@@ -1,5 +1,6 @@
 from sys import platform
 from kivy import app
+from kivy import lang
 from kivy.uix.screenmanager import Screen
 from kivy.uix.dropdown import DropDown
 from kivy.uix.spinner import Spinner
@@ -8,16 +9,13 @@ from kivy.uix.image import Image
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.filechooser import FileChooser
-from kivy.properties import ObjectProperty, BooleanProperty, ListProperty
-from kivy.clock import Clock
+from kivy.properties import ObjectProperty
 from kivy.lang import Builder
-from kivy.graphics import Rectangle, Canvas
 from os import path
 from pathlib import Path
 import os
-
-from kivy.utils import rgba
 import util
+from platformio.project.config import ProjectConfig
 
 config = util.config["flasher"]
 
@@ -35,16 +33,33 @@ data = {
 class FlasherMainScreen(Screen):
     port_select = ObjectProperty(None)
     popup = ObjectProperty(None)
+    select_button = ObjectProperty(None)
+    environment_spinner:  ObjectProperty(None)
     upload_port = None
+    project_config = None
 
     def on_enter(self):
         super().on_enter(self)
 
     def select(self, port):
-        print(port)
+        pass
 
     def set_upload_port(self, port):
         self.upload_port = port
+    def update_project_path(self, _, sel):
+        self.select_button.text = path.basename(sel)
+        self.project_config = ProjectConfig(path.join(sel, "platformio.ini"))
+        envs = self.project_config.envs()
+        self.environment_spinner.values = envs
+        dEnvs = self.project_config.default_envs()
+        self.environment_spinner.disabled = False
+        if len(dEnvs) > 0:
+            self.environment_spinner.text = dEnvs[0]
+        elif len(envs) > 0:
+            self.environment_spinner.text = envs[0]
+        else:
+            self.environment_spinner.text = "No Envs!"
+            self.environment_spinner.disabled = True
 
 
 class SerialSpinner(Spinner):
@@ -82,9 +97,20 @@ class PioFileChooserScreen(Screen):
     def on_touch(self, s, t):
         if not s or not path.isdir(s[0]):
             return
-        for fn in os.listdir(s[0]):
-            if path.basename(fn) =="platformio.ini" and t.is_double_tap:
-                t.is_double_tap = False
-                self.file_chooser.cancel()
-                #self.file_chooser.path = path.join(self.file_chooser.path, os.pardir)
-                break
+        if self.is_pio_project(s[0]) and t.is_double_tap:
+            t.is_double_tap = False
+            self.file_chooser.cancel()
+            #self.file_chooser.path = path.join(self.file_chooser.path, os.pardir
+
+    def is_pio_project(self, file):
+        if not path.isdir(file):
+            return False
+        for fn in os.listdir(file):
+            if path.basename(fn) == "platformio.ini":
+                return True
+        return False
+    def is_pio_project_selection(self, selection):
+        if len(selection) > 0:
+            if self.is_pio_project(selection[0]):
+                return True
+        return False

@@ -7,6 +7,8 @@
 <FlasherMainScreen>:
     name: "FlasherMainScreen"
     port_select: port_select
+    select_button: select_button
+    environment_spinner: environment_spinner
     FloatLayout:
         size_hint: (.96, .96)
         pos_hint: {"center_x": 0.5, "center_y": 0.5}
@@ -38,18 +40,27 @@
                     on_press: self.refresh()
             GridLayout:
                 cols: 2
-                size_hint: (.3,.10)
-                pos_hint: {"x": 0, "y": .9}
+                size_hint: (.3, .9)
+                spacing: [10, 10]
+                pos_hint: {"x": 0, "y": 0}
                 Label:
                     text: "Project: "
-                    size_hint: (.3, 1)
+                    size_hint: (.3, None)
                 Button:
-                    id: file
+                    id: select_button
                     text: "<select>"
-                    size_hint: (.6, 1)
+                    size_hint: (.6, None)
                     on_press:
                         root.manager.transition = FadeTransition()
                         root.manager.current = "PioFileChooserScreen"
+                Label:
+                    text: "Enviroment: "
+                    size_hint: (.3, None)
+                Spinner:
+                    id: environment_spinner
+                    disabled: True
+                    text: "<select>"
+                    size_hint: (.6, None)
 <PioFileChooserScreen>:
     name: "PioFileChooserScreen"
     file_chooser: file_chooser
@@ -78,7 +89,9 @@
                     
             Button:
                 text: "Select"
+                disabled: not root.is_pio_project_selection(file_chooser.selection)
                 on_press:
+                    root.manager.flasher_main_screen.update_project_path(file_chooser.path, file_chooser.selection[0])
                     root.manager.current = "FlasherMainScreen"
         BoxLayout:
             size_hint: (1,.8)
