@@ -49,6 +49,7 @@ class FlasherMainScreen(Screen):
 
     def set_upload_port(self, port):
         self.upload_port = port
+    
     def update_project_path(self, _, sel):
         os.chdir(sel)
         self.select_button.text = path.basename(sel)
@@ -74,17 +75,28 @@ class FlasherMainScreen(Screen):
             targets = {}
             for env, data in load_project_ide_data(os.getcwd(), [self.environment_spinner.text]).items():
                 for t in data.get("targets"):
-                    self.targets[t["title"]] = t["name"]
-            self.tasks_spinner.values = self.targets.keys()
-            sorted(self.targets)
+                    targets[t["title"]] = t["name"]
+            sorted(targets)
+            self.targets = targets
             if "Upload" in self.targets.keys():
                 self.tasks_spinner.text = "Upload"
             else:
                 self.tasks_spinner.text = self.targets.keys()[0]
-            self.targets = targets
         except:
+            
             self.tasks_spinner.disabled = True
             self.tasks_spinner.text = "Failed to load"
+    
+    def run_target(self):
+        env = self.environment_spinner.text
+        variables = {'pioenv': env, 'project_config': self.project_config.path}
+        options = self.project_config.items(env=env, as_dict=True)
+        options["upload_port"] = self.port_select.text
+        platform = PlatformFactory.new(options['platform'])
+        print(self.targets)
+        target = [self.targets[self.tasks_spinner.text]]
+        r = platform.run(variables, target, False, True, cpu_count())
+        print(r)
                 
 
 class SerialSpinner(Spinner):
@@ -109,16 +121,19 @@ class PioFileChooserScreen(Screen):
             if path.exists(path.join(self.file_chooser.path, c[1].text, "platformio.ini")):
                 c[1].color = (1, .5, 0, 1)
                 parent.locked = True
+
     def update_drives(self):
         drives = ["Home"]
         for d in util.drives():
             drives.append(d)
         self.drive_select.values = drives
+
     def select_root_path(self, pKey):
         if (pKey == "Home"):
             self.file_chooser.rootpath = config["firmwarePath"]
             return
         self.file_chooser.rootpath = path.join(util.drive_basepath, pKey)
+
     def on_touch(self, s, t):
         if not s or not path.isdir(s[0]):
             return

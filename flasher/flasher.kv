@@ -24,25 +24,13 @@
                     root.manager.transition = SlideTransition()
                     root.manager.transition.direction = 'right'
                     root.manager.current = "MainScreen"
-        FloatLayout:
+        GridLayout:
             size_hint: (1, .88)
             pos_hint: {"x": 0, "y": 0}
+            cols: 2
             GridLayout:
                 cols: 2
-                size_hint: (.3,.10)
-                pos_hint: {"x": .7, "y": .9}
-                Label:
-                    text: "Port: "
-                    size_hint: (.33, 1)
-                SerialSpinner:
-                    id: port_select
-                    text: "<select>"
-                    on_text:
-                        root.set_upload_port(self.text)
-                    on_press: self.refresh()
-            GridLayout:
-                cols: 2
-                size_hint: (.3, .9)
+                size_hint: (1, 1)
                 spacing: [10, 10]
                 pos_hint: {"x": 0, "y": 0}
                 Label:
@@ -80,7 +68,30 @@
                 Switch:
                     id: force_switch
                     active: False
-                    size_hint: (.6, None)
+                    size_hint: (.7, None)
+            GridLayout:
+                cols: 2
+                size_hint: (1, 1)
+                spacing: [10, 10]
+                padding: [10, 10, 10, 10]
+                Label:
+                    text: "Port: "
+                    size_hint: (.33, None)
+                SerialSpinner:
+                    id: port_select
+                    size_hint: (.67, None)
+                    text: "<select>"
+                    on_text:
+                        root.set_upload_port(self.text)
+                    on_press: self.refresh()
+                Widget:
+                Button:
+                    text: "Run"
+                    disabled: root.environment_spinner.disabled or root.tasks_spinner.disabled or port_select.text == "<select>"
+                    size_hint: (1, None)
+                    pos_hint: {"x": 0, "y": 0}
+                    on_press:
+                        root.run_target()
 
 <PioFileChooserScreen>:
     name: "PioFileChooserScreen"
@@ -111,8 +122,9 @@
                 text: "Select"
                 disabled: not root.is_pio_project_selection(file_chooser.selection)
                 on_press:
-                    root.manager.flasher_main_screen.update_project_path(file_chooser.path, file_chooser.selection[0])
                     root.manager.current = "FlasherMainScreen"
+                on_release:
+                    root.manager.flasher_main_screen.update_project_path(file_chooser.path, file_chooser.selection[0])
         BoxLayout:
             size_hint: (1,.8)
             pos_hint: {"x": 0, "y": 0}
